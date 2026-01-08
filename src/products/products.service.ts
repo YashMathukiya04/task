@@ -14,14 +14,13 @@ export class ProductsService {
   ){}
 
   async create(createProductDto: CreateProductDto) {
-    const product = this.productRepository.create(createProductDto);
-    const savedProduct = await this.productRepository.save(product);
-    console.log(savedProduct);
+    const product = await this.productRepository.save(createProductDto);
+    console.log(product);
     return {
       status: true,
       statusCode: HttpStatus.CREATED,
       message: 'Product created successfully',
-      data: savedProduct,
+      data: product,
     };
   }
 
