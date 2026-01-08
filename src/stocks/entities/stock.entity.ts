@@ -7,6 +7,7 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 import { Product } from '../../products/entities/product.entity';
+import { StockEntry } from './stock-entry.entity';
 
 @Entity('stock')
 export class Stock {
@@ -30,6 +31,14 @@ export class Stock {
 
   @Column({ type: 'date' })
   expiry_date: Date;
+
+  @ManyToOne(() => StockEntry, (entry) => entry.stocks, {
+      onDelete: 'CASCADE',
+      nullable: true, // IMPORTANT: must be true for migration to work
+  })
+
+  @JoinColumn({ name: 'stock_entry_id' })
+  stock_entry: StockEntry;
 
   @CreateDateColumn({ type: 'timestamp' })
   added_at: Date;

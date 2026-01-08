@@ -31,8 +31,18 @@ export class StocksService {
     };
   }
 
-  findAll() {
-    return `This action returns all stocks`;
+  async findAll() {
+    const stocks = await this.stockRepository.find(
+      {
+        relations: ['product']
+      }
+    );
+    return {
+      status: true,
+      statusCode: HttpStatus.OK,
+      message: 'Stocks fetched successfully',
+      data: stocks,
+    };
   }
 
   findOne(id: number) {
@@ -47,8 +57,8 @@ export class StocksService {
     return `This action removes a #${id} stock`;
   }
 
-  addBulkStocks(dtos: CreateStockDto[]){
-    const stocks = dtos.map((dto)=>  this.stockRepository.save(dto));
+  async addBulkStocks(dtos: CreateStockDto[]){
+    const stocks = await Promise.all(dtos.map((dto)=>  this.stockRepository.save(dto)));
     console.log(stocks);
     return {
       status: true,
