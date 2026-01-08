@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Stock } from './entities/stock.entity';
 import { Repository } from 'typeorm';
 import { Product } from 'src/products/entities/product.entity';
+import { StockEntry } from './entities/stock-entry.entity';
 
 @Injectable()
 export class StocksService {
@@ -14,6 +15,8 @@ export class StocksService {
     private readonly stockRepository: Repository<Stock>,
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
+    @InjectRepository(StockEntry)
+    private readonly stockEntryRepository: Repository<StockEntry>,
   ){}
 
   async create(createStockDto: CreateStockDto) {
@@ -57,15 +60,42 @@ export class StocksService {
     return `This action removes a #${id} stock`;
   }
 
-  async addBulkStocks(dtos: CreateStockDto[]){
-    const stocks = await Promise.all(dtos.map((dto)=>  this.stockRepository.save(dto)));
-    console.log(stocks);
-    return {
-      status: true,
-      statusCode: HttpStatus.CREATED,
-      message: 'Stocks added successfully',
-      data: stocks,
-    };
+  async addBulkStocks(dtos: CreateStockDto[], description? : string){
+
+  const stockEntry = await this.stockEntryRepository.save(
+      this.stockEntryRepository.create({
+        description: description,
+      })  
+  );
+
+    const stocks = dtos.map((dto) => {
+    return this.stockRepository.create({
+      ...dto,
+      stock_entry: stockEntry,
+    });
+  });
+
+  const savedStocks = await this.stockRepository.save(stocks);
+
+  return {
+    status: true,
+    statusCode: HttpStatus.CREATED,
+    message: 'Stocks added successfully',
+    stock_entry: stockEntry,
+    data: savedStocks,
+  };
   }
 
+  async getStockEntry(){
+    const stockEntry = await this.stockEntryRepository.find({
+      relations : ['stocks.product']
+    });
+    // console.log("call");
+    return {
+      status: true,
+      statusCode: HttpStatus.OK,
+      message: 'Stock entry fetched successfully',
+      data: stockEntry,
+    };
+  }
 }

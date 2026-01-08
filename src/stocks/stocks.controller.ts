@@ -12,6 +12,11 @@ export class StocksController {
     return this.stocksService.create(createStockDto);
   }
 
+  @Get('entries')
+  async getStockEntry() {
+    return await this.stocksService.getStockEntry();
+  }
+
   @Get()
   findAll() {
     return this.stocksService.findAll();

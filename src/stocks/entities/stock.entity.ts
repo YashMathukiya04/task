@@ -34,9 +34,8 @@ export class Stock {
 
   @ManyToOne(() => StockEntry, (entry) => entry.stocks, {
       onDelete: 'CASCADE',
-      nullable: true, // IMPORTANT: must be true for migration to work
+      nullable: true, 
   })
-
   @JoinColumn({ name: 'stock_entry_id' })
   stock_entry: StockEntry;
 
