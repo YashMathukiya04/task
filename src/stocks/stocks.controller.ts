@@ -31,4 +31,10 @@ export class StocksController {
   remove(@Param('id') id: string) {
     return this.stocksService.remove(+id);
   }
+
+  @Post('bulk')
+  addBulkStocks(@Body() dtos: CreateStockDto[]) {
+    return this.stocksService.addBulkStocks(dtos);
+  }
+
 }

@@ -46,4 +46,16 @@ export class StocksService {
   remove(id: number) {
     return `This action removes a #${id} stock`;
   }
+
+  addBulkStocks(dtos: CreateStockDto[]){
+    const stocks = dtos.map((dto)=>  this.stockRepository.save(dto));
+    console.log(stocks);
+    return {
+      status: true,
+      statusCode: HttpStatus.CREATED,
+      message: 'Stocks added successfully',
+      data: stocks,
+    };
+  }
+
 }
