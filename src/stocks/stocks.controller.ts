@@ -12,6 +12,16 @@ export class StocksController {
     return this.stocksService.create(createStockDto);
   }
 
+  @Get('entries')
+  async getStockEntry() {
+    return await this.stocksService.getStockEntry();
+  }
+
+  @Get('entries/:id')
+  async getStock(@Param('id') id: any) {
+    return await this.stocksService.getstock(id);
+  }
+
   @Get()
   findAll() {
     return this.stocksService.findAll();
@@ -31,4 +41,10 @@ export class StocksController {
   remove(@Param('id') id: string) {
     return this.stocksService.remove(+id);
   }
+
+  @Post('bulk')
+  addBulkStocks(@Body() dtos: CreateStockDto[]) {
+    return this.stocksService.addBulkStocks(dtos);
+  }
+
 }
