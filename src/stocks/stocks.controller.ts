@@ -17,6 +17,11 @@ export class StocksController {
     return await this.stocksService.getStockEntry();
   }
 
+  @Get('entries/:id')
+  async getStock(@Param('id') id: any) {
+    return await this.stocksService.getstock(id);
+  }
+
   @Get()
   findAll() {
     return this.stocksService.findAll();

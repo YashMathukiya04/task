@@ -15,7 +15,7 @@ export class ProductsService {
 
   async create(createProductDto: CreateProductDto) {
     const product = await this.productRepository.save(createProductDto);
-    console.log(product);
+    // console.log(product);
     return {
       status: true,
       statusCode: HttpStatus.CREATED,
@@ -26,7 +26,7 @@ export class ProductsService {
 
   async findAll() {
     const products = await this.productRepository.find({
-      relations: ['stocks']
+      // relations: ['stocks']
     });
     return {
       status: true,

@@ -1,9 +1,9 @@
-import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateStockDto } from './dto/create-stock.dto';
 import { UpdateStockDto } from './dto/update-stock.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Stock } from './entities/stock.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Product } from 'src/products/entities/product.entity';
 import { StockEntry } from './entities/stock-entry.entity';
 
@@ -61,6 +61,10 @@ export class StocksService {
   }
 
   async addBulkStocks(dtos: CreateStockDto[], description? : string){
+  
+  if (!dtos || dtos.length === 0) {
+    throw new BadRequestException('Stock list cannot be empty');
+  }
 
   const stockEntry = await this.stockEntryRepository.save(
       this.stockEntryRepository.create({
@@ -68,7 +72,7 @@ export class StocksService {
       })  
   );
 
-    const stocks = dtos.map((dto) => {
+  const stocks = dtos.map((dto) => {
     return this.stockRepository.create({
       ...dto,
       stock_entry: stockEntry,
@@ -76,7 +80,7 @@ export class StocksService {
   });
 
   const savedStocks = await this.stockRepository.save(stocks);
-
+  
   return {
     status: true,
     statusCode: HttpStatus.CREATED,
@@ -90,12 +94,33 @@ export class StocksService {
     const stockEntry = await this.stockEntryRepository.find({
       relations : ['stocks.product']
     });
-    // console.log("call");
+    if(!stockEntry){
+      throw new NotFoundException('Stock entry not found');
+    }
+    console.log("call");
+    console.log(stockEntry);
     return {
       status: true,
       statusCode: HttpStatus.OK,
-      message: 'Stock entry fetched successfully',
+      message: 'Stock entry with product fetched successfully',
       data: stockEntry,
+    };
+  }
+
+  async getstock(id: number|any){
+    const stock = await this.stockEntryRepository.find({
+      where : {id : id},
+      relations : ['stocks.product']
+    });
+    if(!stock){
+      throw new NotFoundException('Stock not found');
+    }
+    console.log(stock);
+    return {
+      status: true,
+      statusCode: HttpStatus.OK,
+      message: 'Entry fetched successfully',
+      data: stock,
     };
   }
 }
