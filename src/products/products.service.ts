@@ -52,11 +52,32 @@ export class ProductsService {
     };
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  async update(id: number, updateProductDto: UpdateProductDto) {
+    const product = await this.productRepository.findOne({ where: { id } });
+    if(!product){
+      throw new NotFoundException('product not found');
+    }
+    const updatedProduct = await this.productRepository.update(id, updateProductDto);
+    return {
+      status: true,
+      statusCode: HttpStatus.OK,
+      message: 'Product updated successfully',
+      data: updatedProduct,
+    };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  async remove(id: number) {
+    const product = await this.productRepository.findOne({ where: { id } });
+    if(!product){
+      throw new NotFoundException('product not found');
+    }
+    const deletedProduct = await this.productRepository.delete(id);
+    
+    return {
+      status: true,
+      statusCode: HttpStatus.OK,
+      message: 'Product deleted successfully',
+      data: deletedProduct,
+    };
   }
 }
